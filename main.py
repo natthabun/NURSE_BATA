@@ -6,18 +6,82 @@ from G2_PACKAGE.matching_and_writing.writing_new_file import *
 import datetime
 
 # def argparserLocal():
-fastq_file= 'data/ont_reads.project.fastq.gz'
+# fastq_file= 'data/ont_reads.project.fastq.gz'
 #function from extraction
-print(data_barcodes_dependent(fastq_file))
+# print(data_barcodes_dependent(fastq_file))
 
 #function from calculating saperated by barcode
-barcode_statistics = calculate_statistics_by_barcode(fastq_file)
-print("Barcode Statistics:" ,barcode_statistics)
+# barcode_statistics = calculate_statistics_by_barcode(fastq_file)
+# print("Barcode Statistics:" ,calculate_statistics_by_barcode(fastq_file))
 
 #function from filtering
-print(filtering_result(fastq_file,55,60,20))
+# print(filtering_result(fastq_file,55,60,20))
 
 #function from writing new file
-output_file = 'new_filtered.fastq.gz'
+# output_file = 'new_filtered.fastq.gz'
 # print(retrieve_matching_records(fastq_file, filtering_result(fastq_file,55,60,20)))
 # write_matching_records_to_fastq(retrieve_matching_records(fastq_file, filtering_result(fastq_file,55,60,30)), output_file)
+def argparserLocal():
+    from argparse import ArgumentParser
+    parser = ArgumentParser(prog='myseq', description='Work with sequence filtering')
+
+    subparsers = parser.add_subparsers(
+        title='commands', description='Please choose a command below:', dest='command'
+    )
+    subparsers.required = True
+
+    # Command for showing stats for decision-making
+    stats_command = subparsers.add_parser('showStats', help='Show statistics for decision-making')
+    stats_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
+
+    # Command for showing filtered data
+    filter_command = subparsers.add_parser('showFiltered', help='Show filtered data based on criteria')
+    filter_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
+    filter_command.add_argument("-p", "--percentiles", type=float, nargs=2, required=True,
+                                help="Percentiles for filtering (low, high)")
+    filter_command.add_argument("-q", "--qscore", type=int, required=True, help="Quality score threshold")
+
+    # Command for writing new filtered file
+    write_command = subparsers.add_parser('writeFiltered', help='Write filtered data to a new file')
+    write_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
+    write_command.add_argument("-n", "--new_file", type=str, required=True, help="New file name for filtered data")
+    write_command.add_argument("-p", "--percentiles", type=float, nargs=2, required=True,
+                               help="Percentiles for filtering (low, high)")
+    write_command.add_argument("-q", "--qscore", type=int, required=True, help="Quality score threshold")
+
+    return parser
+
+def show_stats(file):
+    print(f"Showing statistics for {file}...")
+    stats_result = calculate_statistics_by_barcode(file)
+    print("Barcode Statistics:" , stats_result)
+
+    return stats_result
+
+def show_filtered_data(file, percentiles, qscore_threshold):
+    print(f"Showing filtered data from {file} with percentiles {percentiles} and quality score threshold {qscore_threshold}...")
+    filtered_result = filtering_result(file, percentiles[0], percentiles[1], qscore_threshold)
+    return filtered_result
+
+def write_filtered_file(file, new_file_name, percentiles, qscore_threshold):
+    print(f"Writing filtered data from {file} to {new_file_name}...")
+    new_file = write_matching_records_to_fastq(retrieve_matching_records(file, filtering_result(file,percentiles[0], percentiles[1], qscore_threshold)), new_file_name)
+    return new_file
+
+def main():
+    parser = argparserLocal()
+    args = parser.parse_args()
+    
+    if args.command == 'showStats':
+        show_stats(args.file)
+
+    elif args.command == 'showFiltered':
+        show_filtered_data(args.file, args.percentiles, args.qscore)
+
+    elif args.command == 'writeFiltered':
+        write_filtered_file(args.file, args.new_file, args.percentiles, args.qscore)
+
+if __name__ == "__main__":
+    print("Process is proceeding")
+    main()
+    print("Process is completed")
