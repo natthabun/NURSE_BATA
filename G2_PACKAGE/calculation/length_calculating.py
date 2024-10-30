@@ -1,8 +1,6 @@
 import statistics
 import numpy as np
 
-print("Calculations starting...") 
-
 def maxmin_length(lengths):
     maxval = max(lengths) if lengths else None
     minval = min(lengths) if lengths else None
