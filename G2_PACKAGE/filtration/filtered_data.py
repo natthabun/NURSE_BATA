@@ -1,6 +1,8 @@
 from G2_PACKAGE.extraction.extracted_data import *
 from G2_PACKAGE.calculation.length_calculating import *
 from G2_PACKAGE.barcodes_dependent.statistics_by_barcodes import *
+from tabulate import tabulate
+import pandas as pd
 
 def filtering_percentile_result(fastq_file, barcode_percentiles, threshold):
     # Get data for all barcodes
@@ -33,9 +35,18 @@ def filtering_percentile_result(fastq_file, barcode_percentiles, threshold):
         
         # Print summary for the current barcode
         print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
-        print(passed_read)
-    
+        
+
+    df = pd.DataFrame.from_dict(result, orient="index").transpose()
+    df.columns = result.keys()
+    df.index = range(1, len(df) + 1)
+
+    # Generate the table
+    table = tabulate(df, headers="keys", tablefmt="pretty")
+    print(table)
+
     return result
+    
 
 
 def filtering_length_result(fastq_file, barcode_lengths, threshold):
@@ -64,5 +75,13 @@ def filtering_length_result(fastq_file, barcode_lengths, threshold):
         
         # Print summary for the barcode
         print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
-        print(passed_read)
+
+    df = pd.DataFrame.from_dict(result, orient="index").transpose()
+    df.columns = result.keys()
+    df.index = range(1, len(df) + 1)
+
+    # Generate the table
+    table = tabulate(df, headers="keys", tablefmt="pretty")
+    print(table)
+    
     return result

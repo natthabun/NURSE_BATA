@@ -6,7 +6,7 @@ from G2_PACKAGE.matching_and_writing.writing_new_file import *
 
 def argparserLocal():
     from argparse import ArgumentParser
-    parser = ArgumentParser(prog='my_package', description='Work with sequence filtering')
+    parser = ArgumentParser(prog='my_package', description='Work with sequencing data by filtering based on read-quality and sequence-length.')
 
     subparsers = parser.add_subparsers(
         title='commands', description='Please choose a command below:', dest='command'
@@ -14,40 +14,41 @@ def argparserLocal():
     subparsers.required = True
 
     # Command for showing stats for decision-making
-    stats_command = subparsers.add_parser('showStats', help='Show statistics for decision-making')
+    stats_command = subparsers.add_parser('statAnalysis', help='Perform statistical analysis for decision-making')
     stats_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
     stats_command.add_argument("-p", "--percentiles", required=True,type=float, nargs=2,
-                                help="Percentiles for statistics (low, high)")
+                                help="Input range of Percentiles for statistical analysis (low, high)")
 
     # Command for showing filtered data
-    filter_command = subparsers.add_parser('showFiltered', help='Show filtered data based on criteria')
+    filter_command = subparsers.add_parser('filterPreview', help='Preview data filtered based on criteria')
     filter_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
-    filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Filter type to apply")
+    filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Choose filter-type betweem percentiles and lengths")
     filter_command.add_argument("-p", "--percentiles", type=str, nargs='+', metavar='BARCODE:PERCENTILES',
                                 help="Percentile thresholds for each barcode, e.g., barcodeID:min-max")
     filter_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
                                 help="Length thresholds for each barcode, e.g., barcodeID:min-max")
-    filter_command.add_argument("-q", "--qscore", type=int, required=True, help="Quality score threshold")
+    filter_command.add_argument("-q", "--qscore", type=int, required=True, help="Input Phred quality scores (Q) threshold")
 
     # Command for writing new filtered file
-    write_command = subparsers.add_parser('writeFiltered', help='Write filtered data to a new file')
+    write_command = subparsers.add_parser('exportData', help='Export filtered data to a new file')
     write_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
-    write_command.add_argument("-n", "--new_file", type=str, required=True, help="New file name for filtered data")
-    write_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Filter type to apply")
+    write_command.add_argument("-n", "--new_file", type=str, required=True, help="Provide a name for the new file to save the filtered data")
+    write_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Choose filter-type betweem percentiles and lengths")
     write_command.add_argument("-p", "--percentiles", type=str, nargs='+', metavar='BARCODE:PERCENTILES',
                                 help="Percentile thresholds for each barcode, e.g., barcodeID:min-max")
     write_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
                                 help="Length thresholds for each barcode, e.g., barcodeID:min-max")
-    write_command.add_argument("-q", "--qscore", type=int, required=True, help="Quality score threshold")
+    write_command.add_argument("-q", "--qscore", type=int, required=True, help="Input Phred quality scores (Q) threshold")
 
     return parser
 
 def show_stats(file, percentiles):
-    print(f"Showing statistics for {file} with percentiles {percentiles}...")
+    print(f"Showing statistical data from {file} with percentiles {percentiles}...")
     stats_result = calculate_statistics_by_barcode(file, percentiles[0], percentiles[1])
-    print("Barcode Statistics:" , stats_result)
+    print(stats_result)
 
     return stats_result
+
 def parse_barcode_input(barcode_input):
     separated_barcode = {}
     for each_input in barcode_input:
@@ -78,7 +79,7 @@ def show_filtered_length_data(file, lengths_input, qscore_threshold):
 
 def write_filtered_percentile_file(file, new_file_name, percentiles_input, qscore_threshold):
     barcode_percentiles = parse_barcode_input(percentiles_input)
-    print(f"Writing filtered data from {file} to {new_file_name} with percentiles {barcode_percentiles} and quality score threshold {qscore_threshold}...")
+    print(f"Writing filtered data from {file} to {new_file_name} with percentiles {barcode_percentiles} and quality score threshold = {qscore_threshold}...")
     new_file = write_matching_records_to_fastq(retrieve_matching_records(file, filtering_percentile_result(file,barcode_percentiles, qscore_threshold)), new_file_name)
     return new_file
 
@@ -91,20 +92,23 @@ def write_filtered_length_file(file, new_file_name, lengths_input, qscore_thresh
 def main():
     parser = argparserLocal()
     args = parser.parse_args()
+
     print("Process is proceeding")
-    if args.command == 'showStats':
+
+    if args.command == 'statAnalysis':
         show_stats(args.file, args.percentiles)
 
-    elif args.command == 'showFiltered':
+    elif args.command == 'filterPreview':
         if args.filter_type == 'percentiles':
             show_filtered_percentile_data(args.file, args.percentiles, args.qscore)
         else:
             show_filtered_length_data(args.file, args.lengths, args.qscore)
-    elif args.command == 'writeFiltered':
+    elif args.command == 'exportData':
         if args.filter_type == 'percentiles':
             write_filtered_percentile_file(args.file, args.new_file, args.percentiles, args.qscore)
         else:
             write_filtered_length_file(args.file, args.new_file, args.lengths, args.qscore)
+
     print("Process is completed")
 
 

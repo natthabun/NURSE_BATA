@@ -6,6 +6,7 @@ def data_barcodes_dependent(fastq_file):
     barcodes_dict = {}
     with gzip.open(fastq_file, 'rt') as file:
         for index, record in enumerate(SeqIO.parse(file, 'fastq')):
+
             # Extract barcode (robust parsing with fallback)
             description_parts = record.description.split()
             barcode_field = next((part for part in description_parts if 'barcode=' in part), None)
@@ -25,8 +26,7 @@ def data_barcodes_dependent(fastq_file):
 
             # Add record data
             barcodes_dict[barcode][record.id] = record_data
-            # if index == 100000:
-                # break 
+             
     return barcodes_dict
 
  
