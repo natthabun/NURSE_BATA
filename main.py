@@ -23,8 +23,8 @@ def argparserLocal():
     filter_command = subparsers.add_parser('showFiltered', help='Show filtered data based on criteria')
     filter_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
     filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Filter type to apply")
-    filter_command.add_argument("-p", "--percentiles", type=float, nargs=2,
-                                help="Percentiles for filtering (low, high)")
+    filter_command.add_argument("-p", "--percentiles", type=str, nargs='+', metavar='BARCODE:PERCENTILES',
+                                help="Percentile thresholds for each barcode, e.g., barcodeID:lower-upper")
     filter_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
                                 help="Length thresholds for each barcode, e.g., barcodeID:min-max")
     filter_command.add_argument("-q", "--qscore", type=int, required=True, help="Quality score threshold")
@@ -34,8 +34,8 @@ def argparserLocal():
     write_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
     write_command.add_argument("-n", "--new_file", type=str, required=True, help="New file name for filtered data")
     write_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Filter type to apply")
-    write_command.add_argument("-p", "--percentiles", type=float, nargs=2,
-                               help="Percentiles for filtering (low, high)")
+    write_command.add_argument("-p", "--percentiles", type=str, nargs='+', metavar='BARCODE:PERCENTILES',
+                                help="Percentile thresholds for each barcode, e.g., barcodeID:lower-upper")
     write_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
                                 help="Length thresholds for each barcode, e.g., barcodeID:min-max")
     write_command.add_argument("-q", "--qscore", type=int, required=True, help="Quality score threshold")
@@ -48,10 +48,24 @@ def show_stats(file, percentiles):
     print("Barcode Statistics:" , stats_result)
 
     return stats_result
+def parse_barcode_percentiles(percentiles_input):
+    barcode_percentiles = {}
+    for each_input in percentiles_input:
+        if ':' not in each_input or '-' not in each_input:
+            raise ValueError(f"Invalid format for barcode length: {each_input}. Expected 'barcodeID:lower-upper'")
+        barcode, percentiles = each_input.split(':')
+        lower_percentile, upper_percentile = map(int, percentiles.split('-'))
+        
+        if lower_percentile> upper_percentile:
+            raise ValueError(f"Lower percentile cannot be greater than upper percentile for barcode {barcode}: {each_input}")
+        barcode_percentiles[barcode] = (lower_percentile, upper_percentile)
+    
+    return barcode_percentiles
 
-def show_filtered_percentile_data(file, percentiles, qscore_threshold):
-    print(f"Showing filtered data from {file} with percentiles {percentiles} and quality score threshold {qscore_threshold}...")
-    filtered_result = filtering_percentile_result(file, percentiles[0], percentiles[1], qscore_threshold)
+def show_filtered_percentile_data(file, percentiles_input, qscore_threshold):
+    barcode_percentiles = parse_barcode_percentiles(percentiles_input)
+    print(f"Showing filtered data from {file} with the following percentiles thresholds: {barcode_percentiles} and quality score threshold {qscore_threshold}...")
+    filtered_result = filtering_percentile_result(file, barcode_percentiles, qscore_threshold)
     return filtered_result
 
 def parse_barcode_lengths(lengths_input):
@@ -75,9 +89,10 @@ def show_filtered_length_data(file, lengths_input, qscore_threshold):
     filtered_result = filtering_length_result(file, barcode_lengths, qscore_threshold)
     return filtered_result
 
-def write_filtered_percentile_file(file, new_file_name, percentiles, qscore_threshold):
-    print(f"Writing filtered data from {file} to {new_file_name} with percentiles {percentiles} and quality score threshold {qscore_threshold}...")
-    new_file = write_matching_records_to_fastq(retrieve_matching_records(file, filtering_percentile_result(file,percentiles[0], percentiles[1], qscore_threshold)), new_file_name)
+def write_filtered_percentile_file(file, new_file_name, percentiles_input, qscore_threshold):
+    barcode_percentiles = parse_barcode_percentiles(percentiles_input)
+    print(f"Writing filtered data from {file} to {new_file_name} with percentiles {barcode_percentiles} and quality score threshold {qscore_threshold}...")
+    new_file = write_matching_records_to_fastq(retrieve_matching_records(file, filtering_percentile_result(file,barcode_percentiles, qscore_threshold)), new_file_name)
     return new_file
 
 def write_filtered_length_file(file, new_file_name, lengths_input, qscore_threshold):
