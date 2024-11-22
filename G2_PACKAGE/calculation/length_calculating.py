@@ -12,11 +12,10 @@ def mean_sd(lengths):
     return mean_length, sd_length
 
 def median_and_iqr(lengths):
-    #calculating median
     median_val = statistics.median(lengths)   
-    #calculating iqr
-    q1 = statistics.quantiles(lengths, n=4)[0]  # 25th percentile (Q1)
-    q3 = statistics.quantiles(lengths, n=4)[2]  # 75th percentile (Q3)
+
+    q1 = statistics.quantiles(lengths, n=4)[0]  
+    q3 = statistics.quantiles(lengths, n=4)[2]  
     iqr = q3 - q1
     
     return median_val, iqr
@@ -33,9 +32,8 @@ def length_n50(lengths):
 
 def length_percentiles(lengths, lower=0, upper=100):
     if not isinstance(lengths, list) or len(lengths) == 0:
-        return None, None  # Handle empty or invalid list
+        return None, None  
 
-    # Calculate lower and upper percentile values using numpy.percentile
     lower_value = float(np.percentile(lengths, lower))
     upper_value = float(np.percentile(lengths, upper))
 

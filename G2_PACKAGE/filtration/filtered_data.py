@@ -5,43 +5,33 @@ from tabulate import tabulate
 import pandas as pd
 
 def filtering_percentile_result(fastq_file, barcode_percentiles, threshold):
-    # Get data for all barcodes
     barcodes_dict = data_barcodes_dependent(fastq_file)
-    
-    # Prepare the result dictionary
-    result = {}
-    for barcode, records in barcodes_dict.items():
-        passed_read = []  # Reset the passed reads list for each barcode
 
+    result = {}
+    
+    for barcode, records in barcodes_dict.items():
+        passed_read = []  
         if barcode in barcode_percentiles:
             lower_percentile, upper_percentile = barcode_percentiles[barcode]
         else:
             print(f"No percentile range provided for {barcode}. Skipping...")
-            continue    # Reset the passed reads list for each barcode
+            continue    
         lengths = [record_data[0] for record_data in records.values()]
-        
-        # Calculate length percentiles for the current barcode
         lower_length, upper_length = length_percentiles(lengths, lower_percentile, upper_percentile)
-        # Filter records based on percentiles and quality score
         for read, data in records.items():
             seq_length, avg_quality = data
-            
-            # Ensure seq_length and avg_quality are not None
             if seq_length is not None and avg_quality is not None:
                 if lower_length <= int(seq_length) <= upper_length and avg_quality >= threshold:
                     passed_read.append(read)
-        # Store passed reads for the current barcode
-        result[barcode] = passed_read
-        
-        # Print summary for the current barcode
-        print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
-        
 
+        result[barcode] = passed_read
+ 
+        print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
+  
     df = pd.DataFrame.from_dict(result, orient="index").transpose()
     df.columns = result.keys()
     df.index = range(1, len(df) + 1)
 
-    # Generate the table
     table = tabulate(df, headers="keys", tablefmt="pretty")
     print(table)
 
@@ -50,14 +40,12 @@ def filtering_percentile_result(fastq_file, barcode_percentiles, threshold):
 
 
 def filtering_length_result(fastq_file, barcode_lengths, threshold):
-    # Get data for all barcodes
     barcodes_dict = data_barcodes_dependent(fastq_file)
-    
-    # Prepare the result dictionary
+
     result = {}
     
     for barcode, records in barcodes_dict.items():
-        passed_read = []  # Reset the passed reads list for each barcode
+        passed_read = []  
 
         if barcode in barcode_lengths:
             min_length, max_length = barcode_lengths[barcode]
@@ -69,18 +57,15 @@ def filtering_length_result(fastq_file, barcode_lengths, threshold):
             seq_length, avg_quality = data
             if min_length <= int(seq_length) <= max_length and avg_quality >= threshold:
                 passed_read.append(read)
-        
-        # Store passed reads for the barcode
+       
         result[barcode] = passed_read
-        
-        # Print summary for the barcode
+     
         print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
 
     df = pd.DataFrame.from_dict(result, orient="index").transpose()
     df.columns = result.keys()
     df.index = range(1, len(df) + 1)
 
-    # Generate the table
     table = tabulate(df, headers="keys", tablefmt="pretty")
     print(table)
     
