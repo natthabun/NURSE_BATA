@@ -60,25 +60,31 @@ def filtering_percentile_result(fastq_file, lower_percentile, upper_percentile, 
     return result
 
 
-# def filtering_length_result(fastq_file, min_length, max_length, threshold):
-#     # Get data for all barcodes
-#     data_input = data_barcodes_dependent(fastq_file)
+def filtering_length_result(fastq_file, barcode_lengths, threshold):
+    # Get data for all barcodes
+    data_input = data_barcodes_dependent(fastq_file)
     
-#     # Prepare the result dictionary
-#     result = {}
+    # Prepare the result dictionary
+    result = {}
     
-#     for barcode, records in data_input.items():
-#         passed_read = []  # Reset the passed reads list for each barcode
+    for barcode, records in data_input.items():
+        passed_read = []  # Reset the passed reads list for each barcode
+
+        if barcode in barcode_lengths:
+            min_length, max_length = barcode_lengths[barcode]
+        else:
+            print(f"No length range provided for {barcode}. Skipping...")
+            continue  
         
-#         for read, data in records.items():
-#             seq_length, avg_quality = data
-#             if min_length <= int(seq_length) <= max_length and avg_quality >= threshold:
-#                 passed_read.append(read)
+        for read, data in records.items():
+            seq_length, avg_quality = data
+            if min_length <= int(seq_length) <= max_length and avg_quality >= threshold:
+                passed_read.append(read)
         
-#         # Store passed reads for the barcode
-#         result[barcode] = passed_read
+        # Store passed reads for the barcode
+        result[barcode] = passed_read
         
-#         # Print summary for the barcode
-#         print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
-#         print(passed_read)
-#     return result
+        # Print summary for the barcode
+        print(f"Passed reads from {barcode} - Total: {len(passed_read)}")
+        print(passed_read)
+    return result
