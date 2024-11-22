@@ -22,7 +22,7 @@ def argparserLocal():
     # Command for showing filtered data
     filter_command = subparsers.add_parser('showFiltered', help='Show filtered data based on criteria')
     filter_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
-    filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'length'], required=True, help="Filter type to apply")
+    filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Filter type to apply")
     filter_command.add_argument("-p", "--percentiles", type=float, nargs=2,
                                 help="Percentiles for filtering (low, high)")
     filter_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
@@ -33,7 +33,7 @@ def argparserLocal():
     write_command = subparsers.add_parser('writeFiltered', help='Write filtered data to a new file')
     write_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
     write_command.add_argument("-n", "--new_file", type=str, required=True, help="New file name for filtered data")
-    write_command.add_argument("-t","--filter_type", choices=['percentiles', 'length'], required=True, help="Filter type to apply")
+    write_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Filter type to apply")
     write_command.add_argument("-p", "--percentiles", type=float, nargs=2,
                                help="Percentiles for filtering (low, high)")
     write_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
