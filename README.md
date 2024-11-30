@@ -17,12 +17,7 @@ Results are summarized in a table format for easy interpretation.
 
 # How to Set Up the Environment
 Use the provided G2_environment.yml file to set up the required environment
-## Dependencies
-name: g2project_env
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
+
 dependencies:
   - python=3.9
   - pandas
@@ -32,6 +27,7 @@ dependencies:
   - pip
   - pip:
       - statistics
+  
 ## Commands to set up the environment
 conda env create -f G2_environment.yml
 
