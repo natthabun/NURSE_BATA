@@ -95,12 +95,11 @@ Showing help message for each one
                      :   Input Phred quality scores (Q) threshold
 
 ## Retrieve Filtered Reads and Save to a FASTQ File
-- Based on the percentiles
-- 
+### Writng new Reads file by Percentiles for Barcode 01 and Barcode 02  
 ./my_package exportData -f original_file.fastq.gz -n new_file.fastq -t percentiles -p barcode01:20-80 barcode02:10-90 -q 30
 
-- Base on the lengths
-- 
+## Writing new Reads file by Lengths for Barcode 01 and Barcode 02  
+  
 ./my_package exportData -f original_file.fastq.gz -n new_file.fastq -t lengths -l barcode01:2000-8000 barcode02:1000-9000 -q 30
 
 ### Arguments:
