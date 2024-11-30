@@ -73,7 +73,6 @@ def show_filtered_percentile_data(file, percentiles_input, qscore_threshold):
 def show_filtered_length_data(file, lengths_input, qscore_threshold):
     barcode_lengths = parse_barcode_input(lengths_input)
     print(f"Showing filtered data from {file} with the following length thresholds: {barcode_lengths} and quality score threshold {qscore_threshold}...")
-    # Get the filtered result based on the barcode-specific length thresholds and quality score
     filtered_result = filtering_length_result(file, barcode_lengths, qscore_threshold)
     return filtered_result
 
