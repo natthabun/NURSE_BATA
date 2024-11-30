@@ -22,7 +22,7 @@ def argparserLocal():
     # Command for showing filtered data
     filter_command = subparsers.add_parser('filterPreview', help='Preview data filtered based on criteria')
     filter_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
-    filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Choose filter-type betweem percentiles and lengths")
+    filter_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Choose filter-type between percentiles and lengths")
     filter_command.add_argument("-p", "--percentiles", type=str, nargs='+', metavar='BARCODE:PERCENTILES',
                                 help="Percentile thresholds for each barcode, e.g., barcodeID:min-max")
     filter_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
@@ -33,7 +33,7 @@ def argparserLocal():
     write_command = subparsers.add_parser('exportData', help='Export filtered data to a new file')
     write_command.add_argument("-f", "--file", type=str, required=True, help="Input FASTQ file")
     write_command.add_argument("-n", "--new_file", type=str, required=True, help="Provide a name for the new file to save the filtered data")
-    write_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Choose filter-type betweem percentiles and lengths")
+    write_command.add_argument("-t","--filter_type", choices=['percentiles', 'lengths'], required=True, help="Choose filter-type between percentiles and lengths")
     write_command.add_argument("-p", "--percentiles", type=str, nargs='+', metavar='BARCODE:PERCENTILES',
                                 help="Percentile thresholds for each barcode, e.g., barcodeID:min-max")
     write_command.add_argument("-l", "--lengths", type=str, nargs='+', metavar='BARCODE:LENGTHS',
