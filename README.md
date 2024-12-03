@@ -62,10 +62,10 @@ Showing help message for each one
 ./my_package statAnalysis -f original_file.fastq.gz -p 10 90
 
 ### arguments:
-
--f , --file : Input FASTQ file
-
--p , --percentiles : Input range of Percentiles for statistical analysis (low, high)
+| Tag | Description |
+|---|---|
+| -f , --file | Input FASTQ file |
+| -p , --percentiles | Input range of Percentiles for statistical analysis (low, high) |
                         
 ## Filtering Reads by Percentiles for Barcode 01 and Barcode 02
 
@@ -76,19 +76,13 @@ Showing help message for each one
 ./my_package filterPreview -f original_file.fastq.gz -t lengths -l barcode01:2000-8000 barcode02:1000-9000 -q 30
 
 ### arguments:
-
--f, --file : Input FASTQ file
-
--t {percentiles,lengths}, --filter_type {percentiles,lengths} : Choose filter-type between percentiles and lengths
-
--p BARCODE:PERCENTILES, --percentiles BARCODE:PERCENTILES
-                    :   Percentile thresholds for each barcode, e.g., barcodeID:min-max
-
--l BARCODE:LENGTHS, --lengths BARCODE:LENGTHS 
-                     :   Length thresholds for each barcode, e.g., barcodeID:min-max
-
--q , --qscore 
-                     :   Input Phred quality scores (Q) threshold
+| Tag | Description |
+|---|---|
+|-f, --file | Input FASTQ file |
+|-t {percentiles,lengths}, --filter_type {percentiles,lengths} | Choose filter-type between percentiles and lengths |
+| -p BARCODE:PERCENTILES, --percentiles BARCODE:PERCENTILES |  Percentile thresholds for each barcode, e.g., barcodeID:min-max |
+| -l BARCODE:LENGTHS, --lengths BARCODE:LENGTHS |  Length thresholds for each barcode, e.g., barcodeID:min-max |
+| -q , --qscore |   Input Phred quality scores (Q) threshold |
 
 ## Retrieve Filtered Reads and Save to a FASTQ File
 ### Writng new Reads file by Percentiles for Barcode 01 and Barcode 02  
@@ -98,24 +92,15 @@ Showing help message for each one
   
 ./my_package exportData -f original_file.fastq.gz -n new_file.fastq -t lengths -l barcode01:2000-8000 barcode02:1000-9000 -q 30
 
-### Arguments:
-
--f, --file : Input FASTQ file
-  
--n, --new_file
-            :            Provide a name for the new file to save the filtered data
-  
--t {percentiles,lengths}, --filter_type {percentiles,lengths}
-             :           Choose filter-type between percentiles and lengths
-
--p BARCODE:PERCENTILES, --percentiles BARCODE:PERCENTILES 
-            :            Percentile thresholds for each barcode, e.g., barcodeID:min-max
-
--l BARCODE:LENGTHS, --lengths BARCODE:LENGTHS
-           :             Length thresholds for each barcode, e.g., barcodeID:min-max
-  
--q, --qscore 
-           :             Input Phred quality scores (Q) threshold
+### arguments:
+| Tag | Description |
+|---|---|
+| -f, --file | Input FASTQ file | 
+|-n, --new_file |    Provide a name for the new file to save the filtered data |
+| -t {percentiles,lengths}, --filter_type {percentiles,lengths} |        Choose filter-type between percentiles and lengths  |
+| -p BARCODE:PERCENTILES, --percentiles BARCODE:PERCENTILES  |     Percentile thresholds for each barcode, e.g., barcodeID:min-max |
+| -l BARCODE:LENGTHS, --lengths BARCODE:LENGTHS |    Length thresholds for each barcode, e.g., barcodeID:min-max | 
+| -q, --qscore |        Input Phred quality scores (Q) threshold |
 
 
 
